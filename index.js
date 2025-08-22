@@ -8,18 +8,17 @@ require('dotenv').config(); // Load environment variables from .env
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-
 // Middleware
 app.use(cors({
-    origin: ['http://localhost:5173', ],
+    origin: ['http://localhost:3000', 'https://your-frontend-url.com'],
     methods: ['GET', 'POST'],
     credentials: true
 }));app.use(bodyParser.json());
 
 // Initialize Razorpay instance with your keys
 const razorpay = new Razorpay({
-    key_id: "rzp_test_R7ucy9bfW3v6nk",
-    key_secret: "BNL7jidA4k0VFJep4QJ3P1UR",
+    key_id: process.env.RAZORPAY_KEY_ID,
+    key_secret: process.env.RAZORPAY_KEY_SECRET,
 });
 
 console.log("RAZORPAY_KEY_ID:", process.env.RAZORPAY_KEY_ID);
