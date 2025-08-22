@@ -17,12 +17,9 @@ app.use(cors({
 
 // Initialize Razorpay instance with your keys
 const razorpay = new Razorpay({
-    key_id: process.env.RAZORPAY_KEY_ID,
-    key_secret: process.env.RAZORPAY_KEY_SECRET,
+    key_id: "rzp_test_R7ucy9bfW3v6nk",
+    key_secret: "BNL7jidA4k0VFJep4QJ3P1UR",
 });
-
-console.log("RAZORPAY_KEY_ID:", process.env.RAZORPAY_KEY_ID);
-console.log("RAZORPAY_KEY_SECRET:", process.env.RAZORPAY_KEY_SECRET);
 
 // --- API Endpoint 1: To Create a Razorpay Order ---
 app.post('/create-order', async (req, res) => {
