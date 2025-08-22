@@ -8,34 +8,44 @@ require('dotenv').config(); // Load environment variables from .env
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+
 // Middleware
-app.use(cors());
-app.use(bodyParser.json());
+app.use(cors({
+    origin: ['http://localhost:5173', ],
+    methods: ['GET', 'POST'],
+    credentials: true
+}));app.use(bodyParser.json());
 
 // Initialize Razorpay instance with your keys
 const razorpay = new Razorpay({
-    key_id: process.env.RAZORPAY_KEY_ID,
-    key_secret: process.env.RAZORPAY_KEY_SECRET,
+    key_id: "rzp_test_R7ucy9bfW3v6nk",
+    key_secret: "BNL7jidA4k0VFJep4QJ3P1UR",
 });
+
+console.log("RAZORPAY_KEY_ID:", process.env.RAZORPAY_KEY_ID);
+console.log("RAZORPAY_KEY_SECRET:", process.env.RAZORPAY_KEY_SECRET);
 
 // --- API Endpoint 1: To Create a Razorpay Order ---
 app.post('/create-order', async (req, res) => {
     try {
         const { amount, currency } = req.body;
 
+        console.log("Incoming create-order request:", req.body);
+
         if (!amount || !currency) {
+            console.error("Missing amount or currency");
             return res.status(400).json({ message: 'Amount and currency are required.' });
         }
 
         const options = {
-            amount: amount * 100, // Razorpay requires the amount in paise (100 paise = 1 Rupee)
-            currency: currency,
-            receipt: `receipt_order_${Date.now()}`,
+            amount: amount * 100,
+            currency,
+            receipt: `receipt_order_${Date.now()}`
         };
 
         const order = await razorpay.orders.create(options);
-        
-        // Send the order details back to the front-end
+        console.log("Razorpay order created:", order);
+
         res.status(200).json({
             id: order.id,
             currency: order.currency,
@@ -43,9 +53,10 @@ app.post('/create-order', async (req, res) => {
         });
     } catch (error) {
         console.error('Error creating Razorpay order:', error);
-        res.status(500).json({ message: 'Internal Server Error' });
+        res.status(500).json({ message: 'Internal Server Error', details: error.message });
     }
 });
+
 
 // --- API Endpoint 2: To Verify the Payment Signature ---
 app.post('/verify-payment', (req, res) => {
